@@ -10,9 +10,8 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 
-class AuthController extends Controller
+class RegisterController extends Controller
 {
-    //register methods
     public function showRegister()
     {
         return Inertia::render('Auth/Register', [
@@ -39,7 +38,7 @@ class AuthController extends Controller
             'bio' => $request->bio,
         ];
 
-        //handle avatar upload
+        // Handle avatar upload
         if ($request->hasFile('avatar')) {
             $avatarPath = $request->file('avatar')->store('avatars', 'public');
             $userData['avatar'] = $avatarPath;
@@ -50,37 +49,5 @@ class AuthController extends Controller
         Auth::login($user);
 
         return redirect('/dashboard');
-    }
-
-    //login methods
-    public function showLogin()
-    {
-        return Inertia::render('Auth/Login');
-    }
-
-    public function login(Request $request)
-    {
-        $credentials = $request->validate([
-            'email' => ['required', 'email'],
-            'password' => ['required'],
-        ]);
-
-        if (Auth::attempt($credentials, $request->boolean('remember'))) {
-            $request->session()->regenerate();
-            return redirect()->intended('/dashboard');
-        }
-
-        return back()->withErrors([
-            'email' => 'The provided credentials do not match our records.',
-        ]);
-    }
-
-    //logout method
-    public function logout(Request $request)
-    {
-        Auth::logout();
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
-        return redirect('/');
     }
 }
